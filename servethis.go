@@ -57,7 +57,7 @@ func main() {
 
 	log.Fatal(http.Serve(listner, http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			log.Printf("Served %s to %s", r.URL, r.RemoteAddr)
+			log.Printf("Served %s to %s [%s]", r.URL, r.RemoteAddr, r.UserAgent())
 			http.FileServer(http.Dir(*dir)).ServeHTTP(w, r)
 		})))
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net"
 	"net/http"
@@ -8,9 +9,18 @@ import (
 )
 
 func main() {
-	cwd, err := os.Getwd()
-	if err != nil {
-		log.Fatal(err)
+	dir := flag.String("dir", "", "directory (default current working directory)")
+
+	flag.Parse()
+
+	if *dir == "" {
+		cwd, err := os.Getwd()
+
+		if err != nil {
+			log.Fatalf("Error fetching current working directory: %s\n", err)
+		}
+
+		dir = &cwd
 	}
 
 	listner, err := net.Listen("tcp4", ":0")
@@ -40,7 +50,7 @@ func main() {
 		log.Fatal("No valid ipv4 interfaces found!")
 	}
 
-	log.Printf("Serving folder: %s  Ctrl+C to exit", cwd)
+	log.Printf("Serving folder: %s  Ctrl+C to exit", *dir)
 	for _, iface := range ifaces {
 		log.Printf("Listening on: http://%s:%s/", iface, port)
 	}
@@ -48,6 +58,6 @@ func main() {
 	log.Fatal(http.Serve(listner, http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Served %s to %s", r.URL, r.RemoteAddr)
-			http.FileServer(http.Dir(cwd)).ServeHTTP(w, r)
+			http.FileServer(http.Dir(*dir)).ServeHTTP(w, r)
 		})))
 }

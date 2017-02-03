@@ -23,12 +23,12 @@ func main() {
 		dir = &cwd
 	}
 
-	listner, err := net.Listen("tcp4", ":0")
+	listener, err := net.Listen("tcp4", ":0")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	_, port, err := net.SplitHostPort(listner.Addr().String())
+	_, port, err := net.SplitHostPort(listener.Addr().String())
 	if err != nil {
 		log.Fatal("Unable to parse listening port")
 	}
@@ -55,7 +55,7 @@ func main() {
 		log.Printf("Listening on: http://%s:%s/", iface, port)
 	}
 
-	log.Fatal(http.Serve(listner, http.HandlerFunc(
+	log.Fatal(http.Serve(listener, http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Served %s to %s [%s]", r.URL, r.RemoteAddr, r.UserAgent())
 			http.FileServer(http.Dir(*dir)).ServeHTTP(w, r)

@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -55,9 +56,11 @@ func main() {
 		log.Printf("Listening on: http://%s:%s/", iface, port)
 	}
 
+	firstIface := fmt.Sprintf("http://%s:%s", ifaces[0], port)
+
 	log.Fatal(http.Serve(listener, http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			log.Printf("Served %s to %s [%s]", r.URL, r.RemoteAddr, r.UserAgent())
+			log.Printf("Served %s to %s [%s] from %s%s", r.URL, r.RemoteAddr, r.UserAgent(), firstIface, r.URL)
 			http.FileServer(http.Dir(*dir)).ServeHTTP(w, r)
 		})))
 }
